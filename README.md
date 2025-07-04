@@ -1,110 +1,140 @@
-Cryptocurrency Matching Engine
+# Cryptocurrency Matching Engine
+
 A high-performance cryptocurrency matching engine implementing REG NMS-inspired principles of price-time priority and internal order protection.
 
-System Architecture
+## System Architecture
+
 The system is built with the following components:
 
-Matching Engine Core: Implements the order matching logic with price-time priority.
-Order Book: Maintains the order book for each trading pair with efficient data structures.
-REST API: For order submission and market data retrieval.
-WebSocket API: For real-time market data dissemination and trade execution feeds.
-Persistence Layer: SQLite-based storage for recovering state after crashes or restarts.
-Data Structures
+1. **Matching Engine Core**: Implements the order matching logic with price-time priority.
+2. **Order Book**: Maintains the order book for each trading pair with efficient data structures.
+3. **REST API**: For order submission and market data retrieval.
+4. **WebSocket API**: For real-time market data dissemination and trade execution feeds.
+5. **Persistence Layer**: SQLite-based storage for recovering state after crashes or restarts.
+
+## Data Structures
+
 The system uses the following key data structures:
 
-SortedDict for Price Levels:
+1. **SortedDict for Price Levels**: 
+   - Bids are sorted in descending order (highest price first)
+   - Asks are sorted in ascending order (lowest price first)
+   - This allows O(1) access to the best price levels
 
-Bids are sorted in descending order (highest price first)
-Asks are sorted in ascending order (lowest price first)
-This allows O(1) access to the best price levels
-Order Lists at Each Price Level:
+2. **Order Lists at Each Price Level**:
+   - Orders at the same price are stored in a list in time priority order (FIFO)
+   - This ensures that orders are matched according to time priority
 
-Orders at the same price are stored in a list in time priority order (FIFO)
-This ensures that orders are matched according to time priority
-Order ID Lookup Dictionary:
+3. **Order ID Lookup Dictionary**:
+   - Allows O(1) access to any order by its ID
+   - Used for efficient order cancellation and modification
 
-Allows O(1) access to any order by its ID
-Used for efficient order cancellation and modification
-Pending Trigger Orders:
+4. **Pending Trigger Orders**:
+   - Stores stop and take-profit orders waiting to be triggered
+   - Orders are checked against each new trade price
 
-Stores stop and take-profit orders waiting to be triggered
-Orders are checked against each new trade price
-Matching Algorithm
+## Matching Algorithm
+
 The matching algorithm implements strict price-time priority:
 
-For incoming marketable orders, the system first checks the opposite side of the book.
-Orders are matched at the best available price first.
-At each price level, orders are matched in time priority (FIFO).
-The system prevents internal trade-throughs by always matching at the best available price.
-Order Types
+1. For incoming marketable orders, the system first checks the opposite side of the book.
+2. Orders are matched at the best available price first.
+3. At each price level, orders are matched in time priority (FIFO).
+4. The system prevents internal trade-throughs by always matching at the best available price.
+
+## Order Types
+
 The system supports seven order types:
 
-Market Order: Executes immediately at the best available price(s).
-Limit Order: Executes at the specified price or better. Rests on the book if not immediately marketable.
-Immediate-Or-Cancel (IOC): Executes all or part of the order immediately and cancels any unfilled portion.
-Fill-Or-Kill (FOK): Executes the entire order immediately or cancels the entire order if it cannot be fully filled.
-Stop-Loss Order: Becomes a market order when the price reaches the specified stop price.
-Stop-Limit Order: Becomes a limit order when the price reaches the specified stop price.
-Take-Profit Order: Executes when the price reaches a specified profit target.
-API Specifications
-REST API
-POST /orders: Submit a new order
-DELETE /orders/{order_id}: Cancel an existing order
-GET /orders/{order_id}: Get details of an existing order
-GET /market-data/{symbol}/bbo: Get the current Best Bid and Offer
-GET /market-data/{symbol}/order-book: Get the current order book
-GET /market-data/{symbol}/trades: Get recent trades
-WebSocket API
-/ws/bbo: Stream real-time BBO updates
-/ws/order-book: Stream real-time order book updates
-/ws/trades: Stream real-time trade execution updates
-Persistence Layer
+1. **Market Order**: Executes immediately at the best available price(s).
+2. **Limit Order**: Executes at the specified price or better. Rests on the book if not immediately marketable.
+3. **Immediate-Or-Cancel (IOC)**: Executes all or part of the order immediately and cancels any unfilled portion.
+4. **Fill-Or-Kill (FOK)**: Executes the entire order immediately or cancels the entire order if it cannot be fully filled.
+5. **Stop-Loss Order**: Becomes a market order when the price reaches the specified stop price.
+6. **Stop-Limit Order**: Becomes a limit order when the price reaches the specified stop price.
+7. **Take-Profit Order**: Executes when the price reaches a specified profit target.
+
+## API Specifications
+
+### REST API
+
+- `POST /orders`: Submit a new order
+- `DELETE /orders/{order_id}`: Cancel an existing order
+- `GET /orders/{order_id}`: Get details of an existing order
+- `GET /market-data/{symbol}/bbo`: Get the current Best Bid and Offer
+- `GET /market-data/{symbol}/order-book`: Get the current order book
+- `GET /market-data/{symbol}/trades`: Get recent trades
+
+### WebSocket API
+
+- `/ws/bbo`: Stream real-time BBO updates
+- `/ws/order-book`: Stream real-time order book updates
+- `/ws/trades`: Stream real-time trade execution updates
+
+## Persistence Layer
+
 The system includes a SQLite-based persistence layer that:
 
-Saves state automatically:
+1. **Saves state automatically**:
+   - Every 60 seconds during normal operation
+   - During graceful shutdowns (SIGINT, SIGTERM)
+   
+2. **Recovers state automatically** on startup:
+   - Orders (open, partially filled, and pending trigger)
+   - Fee schedules
+   - Recent trades
 
-Every 60 seconds during normal operation
-During graceful shutdowns (SIGINT, SIGTERM)
-Recovers state automatically on startup:
+3. **Maintains data integrity** across application restarts:
+   - Order books are reconstructed with correct price-time priority
+   - Pending trigger orders are restored and monitored
+   - Custom fee schedules are preserved
 
-Orders (open, partially filled, and pending trigger)
-Fee schedules
-Recent trades
-Maintains data integrity across application restarts:
-
-Order books are reconstructed with correct price-time priority
-Pending trigger orders are restored and monitored
-Custom fee schedules are preserved
 The database schema includes tables for:
+- Orders
+- Trades
+- Fee schedules
+- Default fee rates
 
-Orders
-Trades
-Fee schedules
-Default fee rates
-Trade-off Decisions
-In-Memory with SQLite Persistence:
+## Trade-off Decisions
 
-The system is designed as an in-memory matching engine for maximum performance.
-A SQLite persistence layer is implemented to survive crashes and application restarts.
-State is automatically saved periodically and during graceful shutdowns.
-Data Structure Choices:
+1. **In-Memory with SQLite Persistence**: 
+   - The system is designed as an in-memory matching engine for maximum performance.
+   - A SQLite persistence layer is implemented to survive crashes and application restarts.
+   - State is automatically saved periodically and during graceful shutdowns.
 
-SortedDict provides O(log n) insertion/deletion and O(1) access to the best price.
-This is a good balance between performance and code simplicity.
-Concurrency Model:
+2. **Data Structure Choices**:
+   - SortedDict provides O(log n) insertion/deletion and O(1) access to the best price.
+   - This is a good balance between performance and code simplicity.
 
-The current implementation is single-threaded for simplicity.
-In a production environment, a more sophisticated concurrency model would be needed.
-Installation and Setup
-Install the required dependencies:
+3. **Concurrency Model**:
+   - The current implementation is single-threaded for simplicity.
+   - In a production environment, a more sophisticated concurrency model would be needed.
+
+## Installation and Setup
+
+1. Install the required dependencies:
+
+```bash
 pip install -r requirements.txt
-Run the application:
-python -m app.main
-By default, the database is stored in trading_app.db. You can change this by setting the DB_PATH environment variable:
+```
 
+2. Run the application:
+
+```bash
+python -m app.main
+```
+
+By default, the database is stored in `trading_app.db`. You can change this by setting the `DB_PATH` environment variable:
+
+```bash
 DB_PATH=/path/to/database.db python -m app.main
-Usage Guide
-Submitting Orders via REST API
+```
+
+## Usage Guide
+
+### Submitting Orders via REST API
+
+```bash
 # Submit a limit buy order
 curl -X POST "http://localhost:8000/orders" \
   -H "Content-Type: application/json" \
@@ -159,7 +189,11 @@ curl -X POST "http://localhost:8000/orders" \
     "quantity": 1.0,
     "stop_price": 49000.0
   }'
-Connecting to WebSocket Feeds
+```
+
+### Connecting to WebSocket Feeds
+
+```javascript
 // Connect to the BBO feed
 const bbosocket = new WebSocket('ws://localhost:8000/ws/bbo');
 
@@ -191,27 +225,43 @@ tradesSocket.onmessage = function(event) {
   const data = JSON.parse(event.data);
   console.log('Trade Update:', data);
 };
-Running Tests
+```
+
+## Running Tests
+
+```bash
 pytest
+```
+
 For testing advanced order types specifically:
 
+```bash
 pytest tests/test_advanced_orders.py
+```
+
 For testing the persistence layer:
 
+```bash
 pytest tests/test_persistence.py
-Fee Model
+```
+
+## Fee Model
+
 The system implements a maker-taker fee model:
 
-Maker fees (typically lower): Applied to orders that provide liquidity (limit orders that don't execute immediately)
-Taker fees (typically higher): Applied to orders that remove liquidity (market orders or limit orders that execute immediately)
-Default fee rates:
+- **Maker fees** (typically lower): Applied to orders that provide liquidity (limit orders that don't execute immediately)
+- **Taker fees** (typically higher): Applied to orders that remove liquidity (market orders or limit orders that execute immediately)
 
-Maker fee: 0.1% (0.001)
-Taker fee: 0.2% (0.002)
+Default fee rates:
+- Maker fee: 0.1% (0.001)
+- Taker fee: 0.2% (0.002)
+
 Custom fee schedules can be set for specific trading pairs:
 
+```bash
 # Set custom fee schedule for BTC-USDT
 curl -X POST "http://localhost:8000/fee-schedules/BTC-USDT?maker_rate=0.0005&taker_rate=0.001"
 
 # Get fee schedule for BTC-USDT
 curl -X GET "http://localhost:8000/fee-schedules/BTC-USDT"
+```
