@@ -1,0 +1,44 @@
+2025-06-10 15:47:13,610 - app.core.matching_engine - INFO - Matching engine initialized
+2025-06-10 15:47:13,619 - app.core.matching_engine - INFO - Matching engine initialized
+INFO:     Will watch for changes in these directories: ['/local/home/birenpr/trading_app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [25856] using StatReload
+2025-06-10 15:47:14,142 - app.core.matching_engine - INFO - Matching engine initialized
+2025-06-10 15:47:14,152 - app.core.matching_engine - INFO - Matching engine initialized
+2025-06-10 15:47:14,177 - app.core.matching_engine - INFO - Matching engine initialized
+INFO:     Started server process [25860]
+INFO:     Waiting for application startup.
+2025-06-10 15:47:14,178 - app.main - INFO - Starting up the trading application
+INFO:     Application startup complete.
+2025-06-10 15:47:38,306 - app.core.order_book - INFO - Order book initialized for BTC-USDT
+2025-06-10 15:47:38,306 - app.core.order_book - INFO - Adding order: b26a8784-b6b5-406c-b4d0-6c4b6e983871 - buy limit 1.0 @ 50000.0
+2025-06-10 15:47:38,306 - app.core.order_book - INFO - Order added to book: b26a8784-b6b5-406c-b4d0-6c4b6e983871 at price 50000.0
+INFO:     127.0.0.1:57018 - "POST /orders HTTP/1.1" 200 OK
+2025-06-10 15:47:47,724 - app.core.order_book - INFO - Adding order: 6bba28b7-be13-4d95-a5f0-2128d9e79a02 - sell market 0.5 @ None
+2025-06-10 15:47:47,724 - app.core.order_book - INFO - Trade executed: ec3b9d64-95e1-4a7d-bb41-606204ba53cd - 0.5 @ 50000.0
+INFO:     127.0.0.1:43202 - "POST /orders HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47246 - "GET /market-data/BTC-USDT/bbo HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47476 - "GET /market-data/BTC-USDT/order-book HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37544 - "GET /market-data/BTC-USDT/trades HTTP/1.1" 200 OK
+2025-06-10 15:59:52,585 - app.core.order_book - INFO - Adding order: 0dfb2d58-fa62-4825-a3bf-66c0d427c8f2 - buy limit 1.0 @ 50000.0
+2025-06-10 15:59:52,585 - app.core.order_book - INFO - Order added to book: 0dfb2d58-fa62-4825-a3bf-66c0d427c8f2 at price 50000.0
+INFO:     127.0.0.1:39918 - "POST /orders HTTP/1.1" 200 OK
+2025-06-10 16:04:15,403 - app.core.order_book - INFO - Adding order: 148312a6-ff21-4517-ba0d-16b0164e7c22 - sell market 0.5 @ None
+2025-06-10 16:04:15,403 - app.core.order_book - INFO - Trade executed: 92ef6a62-492f-4ec8-89b1-f73b73d25af7 - 0.5 @ 50000.0
+INFO:     127.0.0.1:38366 - "POST /orders HTTP/1.1" 200 OK
+2025-06-10 16:05:03,462 - app.core.order_book - INFO - Adding order: fb76c1fa-a6a3-4dd2-8cad-43cdf576096e - buy ioc 1.0 @ 50000.0
+INFO:     127.0.0.1:34288 - "POST /orders HTTP/1.1" 200 OK
+2025-06-10 16:06:15,604 - app.core.order_book - INFO - Adding order: 923e3d91-838e-4b33-81f2-b6b994134daf - buy fok 1.0 @ 50000.0
+INFO:     127.0.0.1:37634 - "POST /orders HTTP/1.1" 200 OK
+INFO:     10.124.164.125:53206 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     10.124.164.125:53238 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     10.124.164.125:45630 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
+INFO:     10.124.164.125:45674 - "GET / HTTP/1.1" 404 Not Found
+WARNING:  Invalid HTTP request received.
+WARNING:  Invalid HTTP request received.
